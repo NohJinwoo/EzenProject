@@ -5,7 +5,8 @@ import java.sql.*;
 public class LoginDB {
 	public Connection con;
 	public Statement stmt;
-
+	public PreparedStatement pstmt;
+	
 	String driver = "oracle.jdbc.driver.OracleDriver";
 	String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	String user = "c##ezen";

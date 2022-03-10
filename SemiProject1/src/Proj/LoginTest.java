@@ -22,12 +22,12 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 	static TextField age;
 	static TextField address;
 	static TextField food;
-	static TextField tf;
-	static TextArea ta;
-	private Button btn1, btn2, btn6;
+	static TextField word;
+	private TextArea ta;
+	private Button btn1, btn2, btn6, btn7;
 	private LoginDAO dao;
 	private LoginVO Login;
-	private ChattingVO Ch;
+	private SelectChatting Sel;
 
 	String driver = "oracle.jdbc.driver.OracleDriver";
 	String url = "jdbc:oracle:thin:@localhost:1521:xe";
@@ -36,7 +36,8 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 
 	public LoginTest() {
 		dao = new LoginDAO();
-
+		Sel = new SelectChatting();
+		
 		f = new JFrame("로그인");
 		f.setSize(300, 200);
 		f.setLayout(new FlowLayout());
@@ -78,7 +79,6 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 						} else {
 							tfMsg.setText("패스워드가 틀렸습니다.");
 						}
-
 					}
 				}
 
@@ -206,68 +206,87 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 			}
 		});
 
-		tf = new TextField();
+		word = new TextField();
 		ta = new TextArea();
 		
 		ta.setText("도움말을 보시려면 '?'를 입력하세요. \r\n");
 		
 		Panel p = new Panel(); // 패널 : 컴포넌트를 하나로 묶음
 		p.setLayout(new BorderLayout());
-		p.add(tf, BorderLayout.CENTER);
+		p.add(word, BorderLayout.CENTER);
+		Panel s = new Panel();
+		s.setLayout(new BorderLayout());
 		btn6 = new Button("확 인");
 		btn6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				SelectChatting sel = new SelectChatting();
-				try {
-					sel.selectChatting(Ch);
-				} catch (ClassNotFoundException | SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				// 이벤트를 발생시킨 컴포넌트
 				Component comp = (Component) arg0.getSource();
 				if (comp instanceof Button || comp instanceof TextField) { // 버튼이나 텍스트 필드라면
-					String msg = tf.getText().trim();
+					String msg = word.getText().trim();
 					if (msg.equals("")) // 엔터
 						return;
-					ta.append(msg + "\r\n");
-					tf.setText("");
+					System.out.println("[" + word.getText()+"]");
+					ArrayList<ChattingVO> list = Sel.list(msg);
+					if (list.size() == 0) {
+						ta.append(msg + "\r\n" + "다시 입력하세요.");
+					} else {
+						ChattingVO data = (ChattingVO) list.get(0);
+						String pword = data.getWord();
+						if (word.getText().equals(pword)) {
+							ta.append(msg + "\r\n" + data.getAnswer() + "\r\n");
+						} else {
+							ta.append(msg + "\r\n" + "정확히 입력하세요.");
+						}
+					}
 					// TextFiedl 문자열지우기
-					tf.setText("");
+					word.setText("");					
 					// TextField에 캐럿 가져다 놓기
-					tf.requestFocus();
+					word.requestFocus();
 				}
-
 			}
 		});
-
-		p.add(btn6, BorderLayout.EAST);
+		
+		btn7 = new Button("추 가");
+		btn7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+		
+		s.add(btn6, BorderLayout.CENTER);
+		s.add(btn7, BorderLayout.EAST);
+		
+		p.add(s, BorderLayout.EAST);
 
 		f3.add(ta, BorderLayout.CENTER);
 		f3.add(p, BorderLayout.SOUTH);
-		tf.addActionListener(new ActionListener() {
+		word.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				SelectChatting sel = new SelectChatting();
-				try {
-					sel.selectChatting(Ch);
-				} catch (ClassNotFoundException | SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
+				// TODO Auto-generated method stub	
 				// 이벤트를 발생시킨 컴포넌트
 				Component comp = (Component) arg0.getSource();
 				if (comp instanceof Button || comp instanceof TextField) { // 버튼이나 텍스트 필드라면
-					String msg = tf.getText().trim();
+					String msg = word.getText().trim();
 					if (msg.equals("")) // 엔터
 						return;
-					ta.append(msg + "\r\n");
-					tf.setText("");
-					// TextFiedl 문자열지우기
-					tf.setText("");
+					System.out.println("[" + word.getText()+"]");
+					ArrayList<ChattingVO> list = Sel.list(msg);
+					if (list.size() == 0) {
+						ta.append(msg + "\r\n" + "다시 입력하세요.");
+					} else {
+						ChattingVO data = (ChattingVO) list.get(0);
+						String pword = data.getWord();
+						if (word.getText().equals(pword)) {
+							ta.append(msg + "\r\n" + data.getAnswer() + "\r\n");
+						} else {
+							ta.append(msg + "\r\n" + "정확히 입력하세요.");
+						}
+					}
+					// TextField 문자열지우기
+					word.setText("");
 					// TextField에 캐럿 가져다 놓기
-					tf.requestFocus();
+					word.requestFocus();
 				}			
 			}
 		});
@@ -275,10 +294,15 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 		f4 = new JFrame("확인창");
 		f4.setSize(180, 150);
 		f4.setLayout(new FlowLayout());
-
+		f4.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				f4.dispose();
+			}
+		});
+		
 		Label aid = new Label("가입하시겠습니까?", Label.RIGHT);
-		Button btn6 = new Button("확인");
-		btn6.addActionListener(new ActionListener() {
+		Button btn8 = new Button("확인");
+		btn8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				InsertLogin Lo = new InsertLogin();
 				try {
@@ -300,8 +324,8 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 			}
 		});
 
-		Button btn7 = new Button("취소");
-		btn7.addActionListener(new ActionListener() {
+		Button btn9 = new Button("취소");
+		btn9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ppid.setText("");
 				tfMsg1.setText("");
@@ -315,9 +339,11 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 		});
 
 		f4.add(aid);
-		f4.add(btn6);
-		f4.add(btn7);
+		f4.add(btn8);
+		f4.add(btn9);
 	}
+
+	
 
 	public static void main(String[] args) {
 		new LoginTest();
