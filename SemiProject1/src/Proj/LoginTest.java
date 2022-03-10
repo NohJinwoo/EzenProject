@@ -12,22 +12,17 @@ import javax.swing.JFrame;
 public class LoginTest extends WindowAdapter implements ActionListener {
 	public Connection con;
 	public PreparedStatement pstmt;
-	private JFrame f, f2, f3, f4;
-	private TextField id, pwd;
-	static TextField ppid;
-	static TextField pppwd;
-	static TextField ppname;
-	private TextField tfMsg;
-	private TextField tfMsg1;
-	static TextField age;
-	static TextField address;
-	static TextField food;
-	static TextField word;
+	private JFrame f, f2, f3, f4, f5;
+	private TextField id, pwd, tfMsg, tfMsg1, word;
+	static TextField ppid, pppwd, ppname, age, address, food;
+	static TextField cword, canswer;
 	private TextArea ta;
-	private Button btn1, btn2, btn6, btn7;
+	private Button btn1, btn2, btn6, btn7, btn10, btn11;
 	private LoginDAO dao;
 	private LoginVO Login;
 	private SelectChatting Sel;
+	private ChattingVO Chatting;
+	public static final String FONT_BLUE = "\u001B[34m";
 
 	String driver = "oracle.jdbc.driver.OracleDriver";
 	String url = "jdbc:oracle:thin:@localhost:1521:xe";
@@ -37,7 +32,7 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 	public LoginTest() {
 		dao = new LoginDAO();
 		Sel = new SelectChatting();
-		
+
 		f = new JFrame("로그인");
 		f.setSize(300, 200);
 		f.setLayout(new FlowLayout());
@@ -154,7 +149,8 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 		Button btn4 = new Button("회원가입");
 		btn4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (tfMsg1.getText().equals("") || tfMsg1.getText().equals("중복 확인하세요.") || tfMsg1.getText().equals("중복됩니다.")) {
+				if (tfMsg1.getText().equals("") || tfMsg1.getText().equals("중복 확인하세요.")
+						|| tfMsg1.getText().equals("중복됩니다.")) {
 					tfMsg1.setText("중복 확인하세요.");
 				} else {
 					f4.setLocation(50, 50);
@@ -202,15 +198,15 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 		f3.setLayout(new BorderLayout());
 		f3.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				f3.dispose();
+				System.exit(0);
 			}
 		});
 
 		word = new TextField();
 		ta = new TextArea();
-		
+
 		ta.setText("도움말을 보시려면 '?'를 입력하세요. \r\n");
-		
+
 		Panel p = new Panel(); // 패널 : 컴포넌트를 하나로 묶음
 		p.setLayout(new BorderLayout());
 		p.add(word, BorderLayout.CENTER);
@@ -226,68 +222,75 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 					String msg = word.getText().trim();
 					if (msg.equals("")) // 엔터
 						return;
-					System.out.println("[" + word.getText()+"]");
+					System.out.println("[" + word.getText() + "]");
 					ArrayList<ChattingVO> list = Sel.list(msg);
 					if (list.size() == 0) {
-						ta.append(msg + "\r\n" + "다시 입력하세요.");
+						ta.append(msg + "\r\n" + "다시 입력하세요." + "\r\n");
 					} else {
 						ChattingVO data = (ChattingVO) list.get(0);
+//						Color color = new Color(0x0000FF);
 						String pword = data.getWord();
-						if (word.getText().equals(pword)) {
-							ta.append(msg + "\r\n" + data.getAnswer() + "\r\n");
+						String panswer = data.getAnswer();
+						if (msg.equals(pword)) {
+							ta.append(msg + "\r\n" + panswer + "\r\n");
 						} else {
-							ta.append(msg + "\r\n" + "정확히 입력하세요.");
+							ta.append(msg + "\r\n" + "정확히 입력하세요." + "\r\n");
 						}
 					}
 					// TextFiedl 문자열지우기
-					word.setText("");					
+					word.setText("");
 					// TextField에 캐럿 가져다 놓기
 					word.requestFocus();
 				}
 			}
 		});
-		
+
 		btn7 = new Button("추 가");
 		btn7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				if (id.getText().equals("ezen")) {
+					f5.setVisible(true);
+				}
+
 			}
 		});
-		
+
 		s.add(btn6, BorderLayout.CENTER);
 		s.add(btn7, BorderLayout.EAST);
-		
+
 		p.add(s, BorderLayout.EAST);
 
 		f3.add(ta, BorderLayout.CENTER);
 		f3.add(p, BorderLayout.SOUTH);
 		word.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub	
+				// TODO Auto-generated method stub
 				// 이벤트를 발생시킨 컴포넌트
 				Component comp = (Component) arg0.getSource();
 				if (comp instanceof Button || comp instanceof TextField) { // 버튼이나 텍스트 필드라면
 					String msg = word.getText().trim();
 					if (msg.equals("")) // 엔터
 						return;
-					System.out.println("[" + word.getText()+"]");
+					System.out.println("[" + word.getText() + "]");
 					ArrayList<ChattingVO> list = Sel.list(msg);
 					if (list.size() == 0) {
-						ta.append(msg + "\r\n" + "다시 입력하세요.");
+						ta.append(msg + "\r\n" + "다시 입력하세요." + "\r\n");
 					} else {
 						ChattingVO data = (ChattingVO) list.get(0);
+//						Color color = new Color(0x0000FF);
 						String pword = data.getWord();
-						if (word.getText().equals(pword)) {
-							ta.append(msg + "\r\n" + data.getAnswer() + "\r\n");
+						String panswer = data.getAnswer();
+						if (msg.equals(pword)) {
+							ta.append(msg + "\r\n" + panswer + "\r\n");
 						} else {
-							ta.append(msg + "\r\n" + "정확히 입력하세요.");
+							ta.append(msg + "\r\n" + "정확히 입력하세요." + "\r\n");
 						}
 					}
 					// TextField 문자열지우기
 					word.setText("");
 					// TextField에 캐럿 가져다 놓기
 					word.requestFocus();
-				}			
+				}
 			}
 		});
 
@@ -299,7 +302,7 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 				f4.dispose();
 			}
 		});
-		
+
 		Label aid = new Label("가입하시겠습니까?", Label.RIGHT);
 		Button btn8 = new Button("확인");
 		btn8.addActionListener(new ActionListener() {
@@ -341,9 +344,50 @@ public class LoginTest extends WindowAdapter implements ActionListener {
 		f4.add(aid);
 		f4.add(btn8);
 		f4.add(btn9);
-	}
 
-	
+		f5 = new JFrame("대답 추가");
+		f5.setSize(300, 200);
+		f5.setLayout(new FlowLayout());
+
+		Label lword = new Label("      word : ", Label.RIGHT);
+		Label lanswer = new Label("  answer : ", Label.RIGHT);
+
+		cword = new TextField(20);
+		canswer = new TextField(20);
+
+		btn10 = new Button("추가");
+		btn10.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				InsertChatting Ch = new InsertChatting();
+				try {
+					Ch.insertChatting(Chatting);
+					System.out.println("success");
+				} catch (ClassNotFoundException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				cword.setText("");
+				canswer.setText("");
+				f5.dispose();
+			}
+		});
+		btn11 = new Button("취소");
+		btn11.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				cword.setText("");
+				canswer.setText("");
+				f5.dispose();
+			}
+		});
+
+		f5.add(lword);
+		f5.add(cword);
+		f5.add(lanswer);
+		f5.add(canswer);
+		f5.add(btn10);
+		f5.add(btn11);
+
+	}
 
 	public static void main(String[] args) {
 		new LoginTest();

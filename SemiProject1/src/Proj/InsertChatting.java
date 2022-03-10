@@ -20,12 +20,12 @@ public class InsertChatting {
 			
 			String query = "insert into Chatting values(?,?)";
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, LoginTest.word.getText());
-			pstmt.setString(2, LoginTest.pppwd.getText());
+			pstmt.setString(1, LoginTest.cword.getText());
+			pstmt.setString(2, LoginTest.canswer.getText());
 			
 			rows = pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println("[에러]insertLogin() 메소드의 SQL 오류 = " + e.getMessage());
+			System.out.println("[에러]insertChatting() 메소드의 SQL 오류 = " + e.getMessage());
 		}
 		try {
 			pstmt.close();
